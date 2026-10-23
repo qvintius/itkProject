@@ -22,25 +22,24 @@ public class PersonController {
         this.personService = personService;
     }
 
+    //получение всех людей
     @GetMapping
     public ResponseEntity<List<Person>> getAll() {
         List<Person> people = personService.findAll();
         return ResponseEntity.ok(people);
     }
 
+    //поиск по id
     @GetMapping("/{id}")
     public ResponseEntity<Person> getById(@PathVariable Long id) {
         return ResponseEntity.ok(personService.findById(id));
     }
 
+    //сохранение
     @PostMapping
     public ResponseEntity<Void> save(@RequestBody @Valid PersonDto personDto) {
         personService.save(personDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
-
-
-
 
 }

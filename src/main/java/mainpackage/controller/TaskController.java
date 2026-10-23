@@ -37,6 +37,7 @@ public class TaskController {
         this.kafkaTemplate = kafkaTemplate;
     }
 
+    //поиск всех сущностей
     @GetMapping
     public ResponseEntity<List<Task>> getAll(@RequestBody(required = false) Filter filter) {
         Integer pageNumber = filter != null && filter.pageNumber() != null ? filter.pageNumber() : 0;
@@ -47,30 +48,32 @@ public class TaskController {
         return ResponseEntity.ok().body(tasks);
     }
 
+    //поbcr id
     @GetMapping("/{id}")
     public ResponseEntity<Task> getById(@PathVariable("id") Long id) {
         Task task = taskService.findById(id);
         return ResponseEntity.ok().body(task);
     }
 
+    //сохранение
     @PostMapping
     public ResponseEntity<?> save(@RequestBody @Valid TaskDto taskDto) {
-        kafkaTemplate.send(topicTasks, taskDto);
-
+        kafkaTemplate.send(topicTasks, taskDto);//отправка в кафку
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    //изменение статуса
     @PatchMapping("/{id}")
     public ResponseEntity<Void> changeStatus(@PathVariable("id") Long id, @RequestParam StatusTask status) {
         taskService.changeStatus(id, status);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    //назначение исполнителя
     @PutMapping("/{id}")
     public void appointExecutor(@PathVariable("id") Long idTask, @RequestParam("idPerson") Long idPerson) {
-//        taskService.appointExecutor(idTask, idPerson);
         IdsDto idsDto = new IdsDto(idTask, idPerson);
-        kafkaTemplate.send(topicAppointExecutor, idsDto);
+        kafkaTemplate.send(topicAppointExecutor, idsDto);//отправка в кафку
     }
 
 

@@ -30,5 +30,4 @@ public class Task {
             status = StatusTask.NEW;
     }
 
-
 }

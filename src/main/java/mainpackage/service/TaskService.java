@@ -17,7 +17,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -48,9 +47,6 @@ public class TaskService {
 
     public List<Task> findAll(Pageable pageable) {
          List<Task> tasks = taskRepo.findAllByFilter(pageable);
-         List<TaskDto> taskDtos = new ArrayList<>();
-//         for (TaskDto taskDto: taskDtos)
-//             tasks.add(mapper.map(taskDto, Task.class));
          return tasks;
     }
 
@@ -61,7 +57,6 @@ public class TaskService {
         if (taskFromCache != null)
             return taskFromCache;
         Task task = taskRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Сущность не найдена"));
-//        TaskDto taskDto = mapper.map(task, TaskDto.class);
         redisTemplate.opsForValue().set(cacheKey, task, ttl, TimeUnit.MINUTES);
         return task;
     }

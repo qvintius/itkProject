@@ -5,7 +5,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.*;
 
-
 @EnableAspectJAutoProxy
 @ComponentScan("mainpackage")
 @Configuration
@@ -23,7 +22,6 @@ public class MyConfig {
     public ModelMapper modelMapper() {
         return new ModelMapper();
     }
-
 
 }
 

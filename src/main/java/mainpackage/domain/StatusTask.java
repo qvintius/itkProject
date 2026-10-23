@@ -1,6 +1,5 @@
 package mainpackage.domain;
 
-
 public enum StatusTask {
     NEW("Новая"),
     IN_WORK("В работе"),

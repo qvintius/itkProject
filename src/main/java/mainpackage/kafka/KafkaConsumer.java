@@ -25,20 +25,18 @@ public class KafkaConsumer {
         this.taskService = taskService;
     }
 
+    //получение из кафки и передача в сервис
     @KafkaListener(topics = "tasks", groupId = "group1")
-    public void receiveTask(ConsumerRecord<String, ?> record) throws ClassNotFoundException {
-        Class<?> clazz = Class.forName(TaskDto.class.getName());
+    public void receiveTask(ConsumerRecord<String, ?> record) {
         TaskDto taskDto = objectMapper.convertValue(record.value(), TaskDto.class);
         Task task = modelMapper.map(taskDto, Task.class);
         taskService.save(task);
     }
 
     @KafkaListener(topics = "appointExecutor", groupId = "group1")
-    public void receiveIdsDto(ConsumerRecord<String, ?> record) throws ClassNotFoundException {
-        Class<?> clazz = Class.forName(IdsDto.class.getName());
+    public void receiveIdsDto(ConsumerRecord<String, ?> record) {
         IdsDto idsDto = objectMapper.convertValue(record.value(), IdsDto.class);
         taskService.appointExecutor(idsDto);
     }
-
 
 }

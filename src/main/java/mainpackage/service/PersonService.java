@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -45,9 +44,6 @@ public class PersonService {
         if (peopleFromCache != null && !peopleFromCache.isEmpty())
             return peopleFromCache;
         List<Person> people = personRepo.findAll();
-        List<PersonDto> personDtos = new ArrayList<>();
-//        for (Person p: people)
-//            personDtos.add(mapper.map(p, PersonDto.class));
         redisTemplate.opsForValue().set(cacheKey, people, ttl, TimeUnit.MINUTES);
         return people;
     }
@@ -61,7 +57,6 @@ public class PersonService {
 
         Person person = personRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Сущность не найдена"));
         redisTemplate.opsForValue().set(cacheKey, person, ttl, TimeUnit.MINUTES);
-//        PersonDto personDto = mapper.map(person, PersonDto.class);
         return person;
     }
 
@@ -73,6 +68,5 @@ public class PersonService {
         personRepo.save(person);
         redisTemplate.opsForValue().set(CACHE_PREFIX + person.getId(), person, ttl, TimeUnit.MINUTES);
     }
-
 
 }
