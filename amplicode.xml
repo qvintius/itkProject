@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AmplicodePersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit moduleName="itkProj.main" name="Default">
+        <packages>
+          <package value="mainpackage" />
+        </packages>
+      </persistence-unit>
+      <persistence-unit moduleName="itkProj.securityService.main" name="Default">
+        <packages>
+          <package value="mainpackage" />
+        </packages>
+      </persistence-unit>
+      <persistence-unit moduleName="securityService.main" name="Default">
+        <packages>
+          <package value="mainpackage" />
+        </packages>
+      </persistence-unit>
+    </persistence-units>
+  </component>
+</project>
