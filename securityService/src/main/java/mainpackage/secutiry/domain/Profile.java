@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.persistence.GenerationType;
 import lombok.*;
 
+import java.util.UUID;
+
 //учётная запись
 @Entity
 @Table
@@ -24,5 +26,6 @@ public class Profile {
     @JsonIgnore
     private String encodedPassword;
 
+    private UUID keycloakId;
 
 }

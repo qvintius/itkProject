@@ -34,8 +34,35 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+#    networks:
+#      - keycloak_net
+  keycloak:
+#    build:
+#      context: .
+#      dockerfile: DockerfileKeycloak
+    image: quay.io/keycloak/keycloak:26.8.1
+    command: start-dev
+    restart: on-failure
+    ports:
+      - "8081:8080"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+#      KC_DB_URL_HOST: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/postgres
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: root
+    depends_on:
+      - postgres
+    links:
+      - "postgres:postgres"
+    volumes:
+      - ./providers/keycloakplugin-0.0.1-SNAPSHOT-plain.jar:/opt/keycloak/providers/keycloakplugin-0.0.1-SNAPSHOT-plain.jar:ro
+#    networks:
+#      - keycloak_net
 volumes:
   postgres_data:
   redis_data:
   kafka_data:
-# docker-compose up --build
+# docker-compose -p itk up --build

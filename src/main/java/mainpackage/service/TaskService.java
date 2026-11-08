@@ -2,6 +2,7 @@ package mainpackage.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import mainpackage.domain.Person;
 import mainpackage.domain.StatusTask;
@@ -11,15 +12,18 @@ import mainpackage.repo.PersonRepo;
 import mainpackage.repo.TaskRepo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@RequiredArgsConstructor
 public class TaskService {
 
     private final TaskRepo taskRepo;
@@ -28,6 +32,7 @@ public class TaskService {
     private final ObjectMapper objectMapper;
     private final RedisTemplate<String, Object> redisTemplate;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final ApplicationEventPublisher eventPublisher;
     @Value("${cache.prefix.tasks}")
     private String CACHE_PREFIX;
     @Value("${cache.prefix.people}")
@@ -35,14 +40,7 @@ public class TaskService {
     @Value("${cache.ttl}")
     private Long ttl;
 
-    public TaskService(TaskRepo taskRepo, PersonRepo personRepo, ModelMapper mapper, ObjectMapper objectMapper, RedisTemplate<String, Object> redisTemplate, KafkaTemplate<String, Object> kafkaTemplate) {
-        this.taskRepo = taskRepo;
-        this.personRepo = personRepo;
-        this.mapper = mapper;
-        this.objectMapper = objectMapper;
-        this.redisTemplate = redisTemplate;
-        this.kafkaTemplate = kafkaTemplate;
-    }
+
 
     public List<Task> findAll(Pageable pageable) {
          List<Task> tasks = taskRepo.findAllByFilter(pageable);
@@ -61,9 +59,11 @@ public class TaskService {
     }
 
 
+    @Transactional
     public void save(Task task) {
         Task taskFromDb = taskRepo.save(task);
         redisTemplate.opsForValue().set(CACHE_PREFIX + taskFromDb.getId(), task, ttl, TimeUnit.MINUTES);
+        eventPublisher.publishEvent(task);
     }
 
     public void changeStatus(Long id, StatusTask status) {
